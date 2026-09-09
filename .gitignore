@@ -1,0 +1,25 @@
+*.iml
+.gradle/
+/local.properties
+.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+out/
+
+# Modelo ONNX (104 MB, acima do limite do GitHub) - baixar do Hugging Face e colocar em app/src/main/assets/
+app/src/main/assets/model.onnx
+
+# Modelo ONNX (104 MB, acima do limite do GitHub) - baixar do Hugging Face e colocar em app/src/main/assets/
+app/src/main/assets/model.onnx
+
+build/
+app/build/

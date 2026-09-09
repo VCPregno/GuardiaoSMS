@@ -1,0 +1,17 @@
+<resources>
+    <!--
+      Paleta pensada para acessibilidade: alto contraste entre estado
+      "seguro" (verde) e "alerta" (vermelho), já que parte do público-alvo
+      tem baixo letramento digital e precisa reconhecer o risco rapidamente,
+      sem depender só de texto.
+    -->
+    <color name="brand_primary">#1B5E20</color>
+    <color name="brand_primary_variant">#2E7D32</color>
+    <color name="alert_danger">#C62828</color>
+    <color name="alert_danger_bg">#FDECEA</color>
+    <color name="alert_safe">#2E7D32</color>
+    <color name="alert_safe_bg">#E8F5E9</color>
+    <color name="surface_background">#FFFFFF</color>
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#5F6368</color>
+</resources>

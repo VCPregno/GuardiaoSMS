@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Escudo simples representando proteção -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,20 L78,30 V54 C78,72 68,84 54,90 C40,84 30,72 30,54 V30 Z" />
+    <path
+        android:fillColor="#1B5E20"
+        android:pathData="M48,54 L52,60 L64,44 L67,47 L53,67 L45,57 Z" />
+</vector>

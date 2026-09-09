@@ -1,0 +1,44 @@
+﻿<resources>
+    <string name="app_name">Guardião SMS</string>
+
+    <string name="home_title">Guardião SMS</string>
+    <string name="home_status_protected">Proteção ativa</string>
+    <string name="home_status_permission_needed">Permissão necessária para ler SMS</string>
+    <string name="home_grant_permission">Conceder permissão</string>
+    <string name="home_last_alert_none">Nenhuma mensagem suspeita até agora</string>
+    <string name="home_last_alert_prefix">Última mensagem suspeita:</string>
+
+    <string name="history_title">Histórico</string>
+    <string name="history_empty">Nenhuma mensagem analisada ainda</string>
+    <string name="history_label_scam">Suspeita de golpe</string>
+    <string name="history_label_legit">Mensagem legítima</string>
+
+    <string name="settings_title">Configurações</string>
+    <string name="settings_sensitivity_label">Sensibilidade do alerta</string>
+    <string name="settings_sensitivity_help">Valores mais baixos alertam com mais facilidade (mais alertas, incluindo possíveis falsos positivos). Valores mais altos alertam apenas quando o modelo tem mais certeza.</string>
+    <string name="settings_notifications_label">Notificações de alerta</string>
+    <string name="settings_reset_default">Restaurar padrão (0,3)</string>
+
+    <string name="notification_channel_name">Alertas de golpe</string>
+    <string name="notification_channel_description">Notificações quando uma mensagem SMS suspeita de golpe é recebida</string>
+    <string name="notification_title">⚠️ Mensagem suspeita de golpe</string>
+    <string name="notification_body_prefix">Recebida de %1$s: %2$s</string>
+
+    <string name="test_title">Testar mensagem</string>
+    <string name="test_subtitle">Cole ou digite uma mensagem para analisar na hora, sem precisar receber um SMS de verdade.</string>
+    <string name="test_input_label">Texto da mensagem</string>
+    <string name="test_input_placeholder">Ex: Sua conta será bloqueada, clique aqui…</string>
+    <string name="test_analyze_button">Analisar</string>
+    <string name="test_clear_button">Limpar</string>
+    <string name="test_examples_label">Exemplos rápidos</string>
+    <string name="test_result_scam">⚠️ Suspeita de golpe</string>
+    <string name="test_result_legit">✅ Mensagem legítima</string>
+    <string name="test_result_probability">Probabilidade de golpe: %1$.4f%%</string>
+    <string name="test_result_threshold">Limiar de alerta configurado: %1$.1f%%</string>
+
+    <string name="nav_home">Início</string>
+    <string name="nav_history">Histórico</string>
+    <string name="nav_test">Testar</string>
+    <string name="nav_settings">Ajustes</string>
+</resources>
+
