@@ -44,16 +44,27 @@ Estas não são mais escolhas em aberto — são requisitos.
 | 26 | A tela de teste **não** grava no histórico | O histórico representa mensagens realmente recebidas pelo usuário; misturar testes manuais ali distorceria a leitura da tela e atrapalharia uma demonstração |
 | 27 | Barra de probabilidade implementada com `Box` em vez de `LinearProgressIndicator` | A assinatura do `LinearProgressIndicator` mudou entre versões do Material3 (o parâmetro `progress` passou de `Float` para `() -> Float`); usar `Box` elimina o risco de erro de compilação conforme a versão resolvida pelo BOM |
 
-## 3. Pendências (bloqueadas até vocês fornecerem os arquivos)
+## 3. Pendências
 
-- [ ] **Atualização (13/07/2026):** não existe checkpoint salvo em lugar nenhum — o `fine_tuning.py` baixa o BERTimbau base e treina do zero toda vez que é executado; a pasta `modelo_smishing_final/` só existe durante/depois de uma execução local (inclusive está no `.gitignore` do repositório, então nunca foi versionada). Portanto é necessário **rodar o treinamento novamente** para gerar os pesos.
-- [ ] Rodar `fine_tuning.py` (sem alterações — o script já termina com `model.save_pretrained("./modelo_smishing_final")`) em um ambiente com internet e, de preferência, GPU (ex: o mesmo Colab/Kaggle usado antes). Este ambiente de desenvolvimento (usado por mim, Claude) não consegue rodar esse treinamento porque não tem acesso de rede ao Hugging Face Hub (só PyPI e GitHub são permitidos aqui) — o download do `neuralmind/bert-base-portuguese-cased` falharia
-- [ ] Enviar a pasta `modelo_smishing_final/` resultante (zipada) — por upload direto no chat, ou, se for grande demais, como asset de uma Release no GitHub do projeto (consigo baixar diretamente de lá)
-- [ ] Confirmar qual versão de `torch` e `transformers` foi usada no treinamento (`fine_tuning.py`) — a versão mais recente do PyPI mudou o comportamento interno do tokenizer (ver decisão 23) e pode ter outras incompatibilidades ao carregar checkpoints antigos
-- [ ] Rodar a conversão real para ONNX + quantização INT8
-- [ ] Extrair o `vocab.txt` real para portar o tokenizer em Kotlin
-- [ ] Substituir `MockClassifier` por `OnnxClassifier` real no módulo de injeção de dependência
-- [ ] Testar em dispositivo/emulador Android real (este ambiente de desenvolvimento não tem Android SDK/emulador disponível — a compilação final precisa ser feita no Android Studio de vocês)
+Atualizado em 13/10/2026: só o teste em aparelho físico continua em aberto.
+
+- [x] **Atualização (13/07/2026):** não existe checkpoint salvo em lugar nenhum — o `fine_tuning.py` baixa o BERTimbau base e treina do zero toda vez que é executado; a pasta `modelo_smishing_final/` só existe durante/depois de uma execução local (inclusive está no `.gitignore` do repositório, então nunca foi versionada). Portanto é necessário **rodar o treinamento novamente** para gerar os pesos.
+  - **Resolvido:** o modelo treinado com o `dataset_v7` foi publicado no Hugging Face como `Wontsimt/detector-phishing-v3-final`, de onde passou a ser baixado.
+- [x] Rodar `fine_tuning.py` (sem alterações — o script já termina com `model.save_pretrained("./modelo_smishing_final")`) em um ambiente com internet e, de preferência, GPU (ex: o mesmo Colab/Kaggle usado antes). Este ambiente de desenvolvimento (usado por mim, Claude) não consegue rodar esse treinamento porque não tem acesso de rede ao Hugging Face Hub (só PyPI e GitHub são permitidos aqui) — o download do `neuralmind/bert-base-portuguese-cased` falharia
+  - **Resolvido:** treinamento feito pelo grupo; o resultado é o `Wontsimt/detector-phishing-v3-final` (ver decisão 38).
+- [x] Enviar a pasta `modelo_smishing_final/` resultante (zipada) — por upload direto no chat, ou, se for grande demais, como asset de uma Release no GitHub do projeto (consigo baixar diretamente de lá)
+  - **Resolvido:** não foi preciso enviar a pasta. Em 13/10/2026 os pesos foram baixados direto do Hugging Face, pelo `conversao_onnx/baixar_modelo.py` do repositório de ML.
+- [x] Confirmar qual versão de `torch` e `transformers` foi usada no treinamento (`fine_tuning.py`) — a versão mais recente do PyPI mudou o comportamento interno do tokenizer (ver decisão 23) e pode ter outras incompatibilidades ao carregar checkpoints antigos
+  - **Resolvido em 13/10/2026:** o checkpoint carrega e é convertido sem erro com `torch` 2.14.1 e `transformers` 5.19.0. O ONNX FP32 dá resultados idênticos aos do PyTorch (0 decisões diferentes no teste). As versões usadas estão em `conversao_onnx/requirements.txt`, no repositório de ML.
+- [x] Rodar a conversão real para ONNX + quantização INT8
+  - **Resolvido em 13/10/2026:** exportação com o exportador legado e opset 17, seguida de INT8 dinâmico per-channel (decisão 39). Os scripts ficam em `conversao_onnx/` no repositório de ML e reproduzem o modelo do app com o mesmo SHA-256.
+- [x] Extrair o `vocab.txt` real para portar o tokenizer em Kotlin
+  - **Resolvido:** o `vocab.txt` está em `app/src/main/assets/`. Em 13/10/2026 ele foi conferido como idêntico ao vocabulário do `tokenizer.json` do modelo (29.794 tokens), e o tokenizador em Kotlin foi alinhado ao do Hugging Face (decisão 40).
+- [x] Substituir `MockClassifier` por `OnnxClassifier` real no módulo de injeção de dependência
+  - **Resolvido:** o `AppContainer.kt` usa o `OnnxClassifier` desde antes do commit inicial deste repositório (09/09/2026). O `MockClassifier` ficou só para testes de interface.
+- [x] Testar em emulador Android
+  - **Resolvido:** o app foi testado em emulador pelo responsável do TCC (informado em 13/10/2026). Os SMS foram simulados pelos Extended Controls → Phone (ver README).
+- [ ] Testar em aparelho Android físico com chip, recebendo SMS reais de outro número (permissões, notificação na tela de bloqueio, tempo da primeira inferência e consumo de memória num aparelho mais simples)
 
 ## 4. Decisões de interface e acessibilidade (13/10/2026)
 
@@ -71,3 +82,16 @@ Objetivo: adequar a interface ao usuário final (decisão 2: idosos / baixo letr
 | 35 | **Modo escuro**: esquemas de cor claro e escuro completos, cores de risco semânticas (`RiskColors`) que acompanham o tema, barras de sistema conforme o tema do app (edge-to-edge) e opção nos Ajustes "Automático (segue o celular) / Claro / Escuro", salva no DataStore, com Automático como padrão | Cores fixas (fundos claros) ficavam ilegíveis no modo escuro do celular. Um teste unitário (`ColorContrastTest`) verifica o contraste WCAG nos dois temas: texto >= 4,5:1 e ícones/barras/bordas >= 3:1 |
 | 36 | **Tamanhos**: botões e linhas clicáveis com no mínimo 56dp (acima dos 48dp recomendados); fontes maiores que o padrão do Material 3, todas em `sp`; telas roláveis e sem altura fixa em textos | Respeita o tamanho de fonte escolhido no celular (inclusive 200%) sem cortar conteúdo, e facilita o toque para quem tem menos precisão motora |
 | 37 | Todos os textos da interface ficam em `strings.xml` (inclusive os exemplos da tela Testar) | Facilita revisar a linguagem num único lugar e uma eventual tradução |
+
+## 5. Decisões do modelo e do classificador (13/10/2026)
+
+Métricas medidas no conjunto de teste do `fine_tuning.py` (510 mensagens do `dataset_v7`: 232 golpes, 278 legítimas), com uma mensagem por vez, como no app. Detalhes em `conversao_onnx/RESULTADOS.md` no repositório de ML.
+
+| # | Decisão | Razão |
+|---|---|---|
+| 38 | Troca do modelo do app pelo `Wontsimt/detector-phishing-v3-final`, treinado com o `dataset_v7` final | O modelo anterior (de 09/09/2026, SHA-256 `b20c3171…c0c8`) teve, no mesmo teste e limiar 0,5, acurácia de 92,6% e recall de 93,1%, com 16 golpes perdidos e 22 falsos positivos. O modelo novo, na versão do app, tem 96,3% e 97,8%, com 5 golpes perdidos e 14 falsos positivos. O arquivo antigo foi guardado como backup fora do repositório |
+| 39 | Quantização **INT8 dinâmica per-channel** (variante v1), e não o INT8 dinâmico padrão (per-tensor) | Com o mesmo tamanho (105,0 MB contra 104,6 MB) e o mesmo tempo (~24 ms por mensagem num desktop), a v1 tem recall de **97,8%** contra **93,1%** do INT8 padrão (5 contra 16 golpes perdidos). A v1 ficou equivalente ao modelo original em PyTorch, que tem 97,4% de recall (6 perdidos); a pequena diferença está dentro do ruído da quantização. Outras variantes testadas: reduce_range, só MatMul, sem pooler/classificador e FP16. Nenhuma foi melhor; o FP16 é igual ao original, mas tem o dobro do tamanho e não ficou mais rápido no CPU. SHA-256 do modelo do app: `d93dc8974fc2f45bf909e4b257dcf3e65062de040d28306c4f70af202f0a3463` |
+| 40 | Tokenizador em Kotlin **alinhado ao tokenizer do Hugging Face** e verificado por teste unitário (`WordPieceTokenizerTest`: IDs idênticos em 3.408/3.408 mensagens) | O porte manual (decisão 20) divergia do `BertNormalizer`/`BertPreTokenizer` em três pontos: só separava pontuação ASCII (o HF separa toda pontuação Unicode, como "…", aspas curvas, "—" e "•"); não removia caracteres de controle e de formatação invisíveis; e limitava a palavra a 200 caracteres, quando o HF limita a 100. Agora o texto é percorrido por code point, os ideogramas CJK são tratados como no HF, e o teste compara com IDs gerados pelo próprio HF para todo o `dataset_v7` mais 12 casos extras |
+| 41 | **Cópia versionada e atômica** do modelo para o armazenamento interno: `MODEL_VERSION` (hoje 2), arquivo `model_v2.onnx`, remoção das cópias antigas e cópia para um arquivo temporário com `fsync`, renomeado só no fim | Antes o modelo só era copiado se o arquivo não existisse, então um aparelho que já tinha o app continuaria usando o modelo antigo depois da atualização. A cópia atômica evita um arquivo incompleto, que nunca seria copiado de novo, se o app for fechado no meio da cópia de ~105 MB |
+| 42 | **Aquecimento do classificador** em segundo plano quando o app inicia (`GuardiaoSmsApplication`) | A cópia do modelo e a criação da sessão do ONNX Runtime passam a acontecer na inicialização, e não na hora em que o primeiro SMS chega. Se um SMS chegar durante o aquecimento, ele espera a mesma inicialização, porque o `lazy` da sessão é sincronizado |
+| 43 | **Limiar padrão mantido em 0,3** (decisão 10) para o modelo novo | No modelo original em PyTorch, a acurácia é igual nos limiares 0,3 e 0,5 (95,7%), e o recall é levemente maior em 0,3 (97,8% contra 97,4%: um golpe a mais detectado, ao custo de um falso positivo a mais). Como o objetivo do trabalho é priorizar o recall da classe "golpe", não há motivo para mudar o padrão. O modelo dá probabilidades quase sempre próximas de 0 ou 1, então o limiar tem pouco efeito |
