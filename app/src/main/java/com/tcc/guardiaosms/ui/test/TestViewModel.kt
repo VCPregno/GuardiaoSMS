@@ -1,5 +1,6 @@
 package com.tcc.guardiaosms.ui.test
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tcc.guardiaosms.classifier.ClassifierRepository
@@ -7,6 +8,7 @@ import com.tcc.guardiaosms.data.preferences.UserPreferencesRepository
 import com.tcc.guardiaosms.risk.RiskLevel
 import com.tcc.guardiaosms.tips.AttentionPoint
 import com.tcc.guardiaosms.tips.AttentionPointsDetector
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,11 +46,16 @@ class TestViewModel(
     private val _isAnalyzing = MutableStateFlow(false)
     val isAnalyzing: StateFlow<Boolean> = _isAnalyzing.asStateFlow()
 
+    /** true quando a última análise falhou (ex.: modelo ausente ou erro do ONNX Runtime). */
+    private val _analysisFailed = MutableStateFlow(false)
+    val analysisFailed: StateFlow<Boolean> = _analysisFailed.asStateFlow()
+
     fun onTextChanged(value: String) {
         _inputText.value = value
         // Limpa o resultado anterior assim que o texto muda, para não deixar
         // na tela um veredito que não corresponde mais ao texto exibido.
         _result.value = null
+        _analysisFailed.value = false
     }
 
     fun onAnalyze() {
@@ -57,6 +64,7 @@ class TestViewModel(
 
         viewModelScope.launch {
             _isAnalyzing.value = true
+            _analysisFailed.value = false
             try {
                 val threshold = preferencesRepository.threshold.first()
                 val classification = classifier.classify(text)
@@ -68,6 +76,13 @@ class TestViewModel(
                     riskLevel = RiskLevel.from(classification.scamProbability, threshold),
                     attentionPoints = AttentionPointsDetector.detect(text)
                 )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Sem este catch, a exceção derrubaria o app (ex.: model.onnx ausente).
+                Log.e(TAG, "Falha ao analisar a mensagem na tela Testar", e)
+                _result.value = null
+                _analysisFailed.value = true
             } finally {
                 _isAnalyzing.value = false
             }
@@ -77,5 +92,10 @@ class TestViewModel(
     fun onClear() {
         _inputText.value = ""
         _result.value = null
+        _analysisFailed.value = false
+    }
+
+    private companion object {
+        const val TAG = "TestViewModel"
     }
 }

@@ -77,6 +77,7 @@
     <string name="test_examples_label">Exemplos rápidos</string>
     <string name="test_result_probability">Probabilidade de golpe: %1$s</string>
     <string name="test_result_threshold">Limiar de alerta: %1$s</string>
+    <string name="test_error">Não foi possível analisar agora. Tente de novo.</string>
     <string name="test_example_1_label">Golpe: falso bloqueio</string>
     <string name="test_example_1_text">URGENTE: sua conta sera bloqueada hoje. Regularize seu CPF agora: bit.ly/regularizar</string>
     <string name="test_example_2_label">Golpe: cobrança falsa</string>

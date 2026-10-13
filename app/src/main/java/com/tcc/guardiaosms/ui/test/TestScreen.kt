@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -28,7 +31,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.tcc.guardiaosms.R
@@ -60,6 +65,7 @@ fun TestScreen(viewModel: TestViewModel) {
     val inputText by viewModel.inputText.collectAsState()
     val result by viewModel.result.collectAsState()
     val isAnalyzing by viewModel.isAnalyzing.collectAsState()
+    val analysisFailed by viewModel.analysisFailed.collectAsState()
 
     Column(
         modifier = Modifier
@@ -123,6 +129,7 @@ fun TestScreen(viewModel: TestViewModel) {
             }
         }
 
+        if (analysisFailed) ErrorCard()
         result?.let { ResultCard(it) }
 
         SectionTitle(
@@ -140,6 +147,31 @@ fun TestScreen(viewModel: TestViewModel) {
             ) {
                 Text(stringResource(labelRes))
             }
+        }
+    }
+}
+
+/** Erro simples, em linguagem do usuário (o detalhe técnico vai para o Log). */
+@Composable
+private fun ErrorCard() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 20.dp)
+            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer
+        )
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(20.dp)) {
+            Icon(Icons.Filled.ErrorOutline, contentDescription = null, modifier = Modifier.size(32.dp))
+            Text(
+                text = stringResource(R.string.test_error),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(start = 12.dp)
+            )
         }
     }
 }
