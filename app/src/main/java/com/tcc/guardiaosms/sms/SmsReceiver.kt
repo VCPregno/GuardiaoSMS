@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
+import android.util.Log
 import com.tcc.guardiaosms.GuardiaoSmsApplication
 import com.tcc.guardiaosms.data.local.SmsRecordEntity
 import kotlinx.coroutines.CoroutineScope
@@ -62,11 +63,18 @@ class SmsReceiver : BroadcastReceiver() {
                         container.alertNotifier.notifyScamDetected(sender, fullBody)
                     }
                 }
+            } catch (e: Exception) {
+                // Uma exceção não tratada nesta corrotina derrubaria o processo.
+                Log.e(TAG, "Falha ao classificar/registrar SMS recebido", e)
             } finally {
                 // Sempre finalizar, mesmo em caso de erro, para não segurar o
                 // broadcast indefinidamente (o sistema pode penalizar o app).
                 pendingResult.finish()
             }
         }
+    }
+
+    private companion object {
+        const val TAG = "SmsReceiver"
     }
 }

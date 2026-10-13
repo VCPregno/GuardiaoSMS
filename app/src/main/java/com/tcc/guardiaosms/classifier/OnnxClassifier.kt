@@ -7,6 +7,8 @@ import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.nio.LongBuffer
 import kotlin.math.exp
 
@@ -16,7 +18,8 @@ import kotlin.math.exp
  *
  * O modelo NÃO é lido para a memória com `readBytes()`: com ~104 MB, isso
  * estoura o heap da aplicação (OutOfMemoryError). Em vez disso, o arquivo é
- * copiado dos assets para o armazenamento interno na primeira execução e a
+ * copiado dos assets para o armazenamento interno na primeira execução (com
+ * nome versionado, para que atualizações do modelo substituam a cópia antiga) e a
  * sessão é criada a partir do CAMINHO, deixando o ONNX Runtime mapear o
  * arquivo nativamente, fora do heap gerenciado.
  */
@@ -27,13 +30,29 @@ class OnnxClassifier(context: Context) : ClassifierRepository {
     private val tokenizer = WordPieceTokenizer(appContext)
 
     private val session: OrtSession by lazy {
-        val modelFile = File(appContext.filesDir, MODEL_ASSET_NAME)
+        val modelFile = File(appContext.filesDir, MODEL_FILE_NAME)
+
+        // Remove cópias de versões anteriores do modelo (ex.: model.onnx, model_v1.onnx)
+        // e temporários de cópias interrompidas (ex.: model_v2.onnx.tmp).
+        appContext.filesDir.listFiles { file ->
+            file.name != MODEL_FILE_NAME &&
+                (file.name == MODEL_ASSET_NAME || OLD_MODEL_FILE_REGEX.matches(file.name))
+        }?.forEach { it.delete() }
 
         if (!modelFile.exists() || modelFile.length() == 0L) {
+            // Copia para um temporário e só renomeia no fim: se a cópia for
+            // interrompida, não sobra um model_vN.onnx incompleto (que nunca
+            // seria copiado de novo, pois o arquivo já existiria).
+            val tempFile = File(appContext.filesDir, "$MODEL_FILE_NAME.tmp")
             appContext.assets.open(MODEL_ASSET_NAME).use { input ->
-                modelFile.outputStream().use { output ->
+                FileOutputStream(tempFile).use { output ->
                     input.copyTo(output, DEFAULT_BUFFER_SIZE)
+                    output.fd.sync()
                 }
+            }
+            if (!tempFile.renameTo(modelFile)) {
+                tempFile.delete()
+                throw IOException("Falha ao renomear ${tempFile.name} para ${modelFile.name}")
             }
         }
 
@@ -80,5 +99,10 @@ class OnnxClassifier(context: Context) : ClassifierRepository {
 
     companion object {
         private const val MODEL_ASSET_NAME = "model.onnx"
+
+        /** Incrementar sempre que o model.onnx dos assets for trocado, para forçar nova cópia. */
+        private const val MODEL_VERSION = 2
+        private const val MODEL_FILE_NAME = "model_v$MODEL_VERSION.onnx"
+        private val OLD_MODEL_FILE_REGEX = Regex("""model_v\d+\.onnx(\.tmp)?""")
     }
 }
