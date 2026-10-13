@@ -31,16 +31,20 @@ O que o app faz hoje:
 
 As decisões técnicas e de interface estão em `DECISOES_ARQUITETURA.md`.
 
-## Resultados (conjunto de teste, 510 mensagens)
+## Resultados (conjunto de teste, 510 mensagens, limiar padrão do app: 0,3)
 
-| Modelo | Acurácia | Recall (golpe) |
-|---|---|---|
-| BERTimbau original (PyTorch) | 95,7% | 97,4% |
-| **Modelo no app (ONNX INT8 per-channel, v1)** | **96,3%** | **97,8%** |
-| Baseline TF-IDF + Regressão Logística | 88,4% | 86,2% |
+Todos os modelos foram avaliados no **limiar 0,3**, que é o limiar padrão de alerta do app (ajustável nos Ajustes):
 
-- O conjunto de teste é o mesmo do `fine_tuning.py`: divisão 70/15/15 estratificada do `dataset_v7`, com 232 golpes e 278 legítimas. As métricas usam o limiar 0,5.
-- O modelo do app tem desempenho **equivalente ao original**. A pequena diferença a favor da v1 está dentro do ruído da quantização (uma mensagem a mais ou a menos).
+| Modelo | Acurácia | Recall (golpe) | Falsos positivos |
+|---|---|---|---|
+| **Modelo no app (ONNX INT8 per-channel, v1)** | **96,1%** | **97,8%** | 15 |
+| BERTimbau original (PyTorch) | 95,7% | 97,8% | 17 |
+| Baseline TF-IDF + Regressão Logística | 82,8% | 95,7% | 78 |
+
+- O conjunto de teste é o mesmo do `fine_tuning.py`: divisão 70/15/15 estratificada do `dataset_v7`, com 232 golpes e 278 legítimas.
+- O modelo do app foi avaliado uma mensagem por vez, como no aparelho.
+- O modelo do app tem desempenho **equivalente ao original**: o mesmo recall (5 golpes perdidos) e uma diferença de dois falsos positivos, dentro do ruído da quantização.
+- No limiar 0,3, o baseline alcança um recall alto à custa de muitos alarmes falsos: precisão de 74,0%, contra 93,8% da v1. No limiar 0,5, ele tem acurácia de 88,4% e recall de 86,2%.
 - O detalhamento está em [`conversao_onnx/RESULTADOS.md`](https://github.com/Wontsz/TCC-Mitigar-Golpes-Digitais/blob/main/conversao_onnx/RESULTADOS.md), no repositório de ML. Lá estão as outras variantes testadas, os tempos por mensagem, as métricas por limiar e a comparação com o modelo antigo.
 
 ## Como obter o modelo
