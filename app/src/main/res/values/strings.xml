@@ -1,44 +1,109 @@
-﻿<resources>
+<resources>
     <string name="app_name">Guardião SMS</string>
 
-    <string name="home_title">Guardião SMS</string>
-    <string name="home_status_protected">Proteção ativa</string>
-    <string name="home_status_permission_needed">Permissão necessária para ler SMS</string>
-    <string name="home_grant_permission">Conceder permissão</string>
-    <string name="home_last_alert_none">Nenhuma mensagem suspeita até agora</string>
-    <string name="home_last_alert_prefix">Última mensagem suspeita:</string>
+    <!-- Formatos -->
+    <string name="date_time_pattern" translatable="false">dd/MM/yyyy \'às\' HH:mm</string>
 
-    <string name="history_title">Histórico</string>
-    <string name="history_empty">Nenhuma mensagem analisada ainda</string>
-    <string name="history_label_scam">Suspeita de golpe</string>
-    <string name="history_label_legit">Mensagem legítima</string>
-
-    <string name="settings_title">Configurações</string>
-    <string name="settings_sensitivity_label">Sensibilidade do alerta</string>
-    <string name="settings_sensitivity_help">Valores mais baixos alertam com mais facilidade (mais alertas, incluindo possíveis falsos positivos). Valores mais altos alertam apenas quando o modelo tem mais certeza.</string>
-    <string name="settings_notifications_label">Notificações de alerta</string>
-    <string name="settings_reset_default">Restaurar padrão (0,3)</string>
-
-    <string name="notification_channel_name">Alertas de golpe</string>
-    <string name="notification_channel_description">Notificações quando uma mensagem SMS suspeita de golpe é recebida</string>
-    <string name="notification_title">⚠️ Mensagem suspeita de golpe</string>
-    <string name="notification_body_prefix">Recebida de %1$s: %2$s</string>
-
-    <string name="test_title">Testar mensagem</string>
-    <string name="test_subtitle">Cole ou digite uma mensagem para analisar na hora, sem precisar receber um SMS de verdade.</string>
-    <string name="test_input_label">Texto da mensagem</string>
-    <string name="test_input_placeholder">Ex: Sua conta será bloqueada, clique aqui…</string>
-    <string name="test_analyze_button">Analisar</string>
-    <string name="test_clear_button">Limpar</string>
-    <string name="test_examples_label">Exemplos rápidos</string>
-    <string name="test_result_scam">⚠️ Suspeita de golpe</string>
-    <string name="test_result_legit">✅ Mensagem legítima</string>
-    <string name="test_result_probability">Probabilidade de golpe: %1$.4f%%</string>
-    <string name="test_result_threshold">Limiar de alerta configurado: %1$.1f%%</string>
-
+    <!-- Navegação -->
     <string name="nav_home">Início</string>
     <string name="nav_history">Histórico</string>
     <string name="nav_test">Testar</string>
     <string name="nav_settings">Ajustes</string>
-</resources>
+    <string name="action_back">Voltar</string>
 
+    <!-- Níveis de risco -->
+    <string name="risk_high">Risco alto</string>
+    <string name="risk_attention">Atenção</string>
+    <string name="risk_low">Parece segura</string>
+    <string name="risk_high_explanation">O Guardião acha que esta mensagem pode ser golpe.</string>
+    <string name="risk_attention_explanation">O Guardião não tem certeza. Leia com cuidado.</string>
+    <string name="risk_low_explanation">O Guardião não viu sinais de golpe.</string>
+
+    <!-- Início -->
+    <string name="home_title">Guardião SMS</string>
+    <string name="home_status_protected">Proteção ligada</string>
+    <string name="home_status_protected_detail">Suas mensagens SMS estão sendo verificadas.</string>
+    <string name="home_status_permission_needed">O Guardião precisa da sua permissão para ler SMS.</string>
+    <string name="home_status_permission_detail">Sem ela, não dá para avisar sobre golpes.</string>
+    <string name="home_grant_permission">Permitir</string>
+    <string name="home_last_alert_title">Último alerta</string>
+    <string name="home_last_alert_none">Nenhuma mensagem suspeita até agora.</string>
+    <string name="home_open_alert_hint">Toque para ver o que fazer</string>
+
+    <!-- Histórico -->
+    <string name="history_title">Histórico</string>
+    <string name="history_empty">Nenhuma mensagem recebida ainda.</string>
+    <string name="history_empty_detail">Quando chegar um SMS, ele aparece aqui.</string>
+
+    <!-- Detalhe do alerta -->
+    <string name="detail_title">Detalhes da mensagem</string>
+    <string name="detail_from">De:</string>
+    <string name="detail_received_at">Recebida em:</string>
+    <string name="detail_message">Mensagem:</string>
+    <string name="detail_not_found">Mensagem não encontrada.</string>
+
+    <!-- Pontos de atenção -->
+    <string name="tips_title">Pontos de atenção</string>
+    <string name="tips_title_safe">Mesmo assim, fique atento a:</string>
+    <string name="tips_none">Nenhum ponto de atenção encontrado no texto.</string>
+    <string name="tips_disclaimer">Estas dicas são uma verificação simples do texto. A decisão de alerta é feita pelo modelo de IA.</string>
+    <string name="tip_link">Tem um link</string>
+    <string name="tip_money">Pede dinheiro ou Pix</string>
+    <string name="tip_data">Pede senha, código ou dados</string>
+    <string name="tip_urgency">Fala com pressa ou ameaça</string>
+    <string name="tip_phone">Pede para ligar ou chamar no WhatsApp</string>
+    <string name="tip_disguised">Tem letras estranhas ou escondidas</string>
+
+    <!-- Guia "O que fazer" -->
+    <string name="guide_title">O que fazer</string>
+    <string name="guide_title_safe">Cuidados de sempre</string>
+    <string name="guide_no_links">Não clique em links.</string>
+    <string name="guide_no_data">Não envie senhas, códigos nem dados pessoais.</string>
+    <string name="guide_no_pix">Não faça Pix nem transferência.</string>
+    <string name="guide_no_calls">Não ligue para números da mensagem.</string>
+    <string name="guide_confirm">Diz ser de parente, banco ou empresa? Confirme pelo número que você já tinha salvo ou pelo app oficial.</string>
+    <string name="guide_ask_help">Na dúvida, peça ajuda a alguém de confiança.</string>
+    <string name="guide_money_highlight_title">Pedido de dinheiro?</string>
+    <string name="guide_money_highlight">Antes de pagar, ligue para a pessoa no número que você já tinha salvo. Golpistas fingem ser parentes com número novo.</string>
+
+    <!-- Testar -->
+    <string name="test_title">Testar mensagem</string>
+    <string name="test_subtitle">Cole ou digite uma mensagem para analisar na hora.</string>
+    <string name="test_input_label">Texto da mensagem</string>
+    <string name="test_input_placeholder">Ex.: Sua conta será bloqueada, clique aqui…</string>
+    <string name="test_analyze_button">Analisar</string>
+    <string name="test_analyzing">Analisando…</string>
+    <string name="test_clear_button">Limpar</string>
+    <string name="test_examples_label">Exemplos rápidos</string>
+    <string name="test_result_probability">Probabilidade de golpe: %1$s</string>
+    <string name="test_result_threshold">Limiar de alerta: %1$s</string>
+    <string name="test_example_1_label">Golpe: falso bloqueio</string>
+    <string name="test_example_1_text">URGENTE: sua conta sera bloqueada hoje. Regularize seu CPF agora: bit.ly/regularizar</string>
+    <string name="test_example_2_label">Golpe: cobrança falsa</string>
+    <string name="test_example_2_text">Detectamos um Pix nao autorizado. Confirme seus dados para cancelar: gg.gg/pix-cancelar</string>
+    <string name="test_example_3_label">Legítima: pessoal</string>
+    <string name="test_example_3_text">Oi mae, cheguei bem em casa. Te ligo mais tarde!</string>
+    <string name="test_example_4_label">Legítima: comercial</string>
+    <string name="test_example_4_text">Seu pedido foi enviado e chega ate amanha. Obrigado pela preferencia!</string>
+
+    <!-- Ajustes -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_theme_label">Tema</string>
+    <string name="settings_theme_system">Automático (segue o celular)</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+    <string name="settings_sensitivity_label">Sensibilidade do alerta</string>
+    <string name="settings_sensitivity_value">Limiar atual: %1$s</string>
+    <string name="settings_sensitivity_help">Mais para a esquerda: mais alertas. Mais para a direita: só alerta quando tiver mais certeza.</string>
+    <string name="settings_sensitivity_more">Mais alertas</string>
+    <string name="settings_sensitivity_less">Menos alertas</string>
+    <string name="settings_reset_default">Voltar ao padrão (0,30)</string>
+    <string name="settings_notifications_label">Avisar quando chegar golpe</string>
+    <string name="settings_notifications_help">Mostra uma notificação no celular.</string>
+
+    <!-- Notificação -->
+    <string name="notification_channel_name">Alertas de golpe</string>
+    <string name="notification_channel_description">Avisa quando chega um SMS que pode ser golpe</string>
+    <string name="notification_title">Risco alto: pode ser golpe</string>
+    <string name="notification_body">Cuidado: esta mensagem pode ser golpe. Toque para ver o que fazer.</string>
+</resources>

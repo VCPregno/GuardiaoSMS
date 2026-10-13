@@ -18,4 +18,8 @@ interface SmsRecordDao {
 
     @Query("SELECT * FROM sms_records WHERE isScam = 1 ORDER BY receivedAtEpochMillis DESC LIMIT 1")
     fun observeLastScam(): Flow<SmsRecordEntity?>
+
+    // Tela de detalhe do alerta (aberta pela notificação ou pelo Histórico).
+    @Query("SELECT * FROM sms_records WHERE id = :id")
+    fun observeById(id: Long): Flow<SmsRecordEntity?>
 }

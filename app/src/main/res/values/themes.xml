@@ -1,5 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- As barras de sistema são configuradas em MainActivity (enableEdgeToEdge), conforme o tema do app. -->
     <style name="Theme.GuardiaoSMS" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/brand_primary</item>
+        <item name="android:windowBackground">@color/window_background</item>
+        <item name="android:colorAccent">@color/brand_primary</item>
     </style>
 </resources>

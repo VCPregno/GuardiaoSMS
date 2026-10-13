@@ -3,6 +3,7 @@ package com.tcc.guardiaosms.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tcc.guardiaosms.data.preferences.DEFAULT_THRESHOLD
+import com.tcc.guardiaosms.data.preferences.ThemeMode
 import com.tcc.guardiaosms.data.preferences.UserPreferencesRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +19,13 @@ class SettingsViewModel(
 
     val notificationsEnabled: StateFlow<Boolean> = preferencesRepository.notificationsEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    val themeMode: StateFlow<ThemeMode> = preferencesRepository.themeMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ThemeMode.SYSTEM)
+
+    fun onThemeModeSelected(mode: ThemeMode) {
+        viewModelScope.launch { preferencesRepository.setThemeMode(mode) }
+    }
 
     fun onThresholdChanged(value: Float) {
         viewModelScope.launch { preferencesRepository.setThreshold(value) }

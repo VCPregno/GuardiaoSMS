@@ -1,0 +1,7 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Modo escuro do celular: evita o "clarão" branco ao abrir o app. -->
+    <style name="Theme.GuardiaoSMS" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/window_background_dark</item>
+        <item name="android:colorAccent">@color/brand_primary</item>
+    </style>
+</resources>

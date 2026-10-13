@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tcc.guardiaosms.classifier.ClassifierRepository
 import com.tcc.guardiaosms.data.preferences.UserPreferencesRepository
+import com.tcc.guardiaosms.risk.RiskLevel
+import com.tcc.guardiaosms.tips.AttentionPoint
+import com.tcc.guardiaosms.tips.AttentionPointsDetector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +25,9 @@ data class ManualTestResult(
     val analyzedText: String,
     val scamProbability: Float,
     val isScam: Boolean,
-    val thresholdUsed: Float
+    val thresholdUsed: Float,
+    val riskLevel: RiskLevel,
+    val attentionPoints: Set<AttentionPoint>
 )
 
 class TestViewModel(
@@ -59,7 +64,9 @@ class TestViewModel(
                     analyzedText = text,
                     scamProbability = classification.scamProbability,
                     isScam = classification.isScam(threshold),
-                    thresholdUsed = threshold
+                    thresholdUsed = threshold,
+                    riskLevel = RiskLevel.from(classification.scamProbability, threshold),
+                    attentionPoints = AttentionPointsDetector.detect(text)
                 )
             } finally {
                 _isAnalyzing.value = false

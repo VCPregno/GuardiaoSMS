@@ -46,7 +46,7 @@ class SmsReceiver : BroadcastReceiver() {
                 val result = container.classifierRepository.classify(fullBody)
                 val isScam = result.isScam(currentThreshold)
 
-                container.database.smsRecordDao().insert(
+                val recordId = container.database.smsRecordDao().insert(
                     SmsRecordEntity(
                         sender = sender,
                         body = fullBody,
@@ -60,7 +60,7 @@ class SmsReceiver : BroadcastReceiver() {
                 if (isScam) {
                     val notificationsEnabled = container.preferencesRepository.notificationsEnabled.first()
                     if (notificationsEnabled) {
-                        container.alertNotifier.notifyScamDetected(sender, fullBody)
+                        container.alertNotifier.notifyScamDetected(recordId, sender)
                     }
                 }
             } catch (e: Exception) {

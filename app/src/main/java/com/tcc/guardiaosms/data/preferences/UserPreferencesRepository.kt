@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -22,6 +23,7 @@ class UserPreferencesRepository(private val context: Context) {
     private object Keys {
         val THRESHOLD = floatPreferencesKey("scam_threshold")
         val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
     }
 
     val threshold: Flow<Float> = context.dataStore.data.map { prefs ->
@@ -30,6 +32,12 @@ class UserPreferencesRepository(private val context: Context) {
 
     val notificationsEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
         prefs[Keys.NOTIFICATIONS_ENABLED] ?: true
+    }
+
+    /** Tema escolhido nos Ajustes; [ThemeMode.SYSTEM] (segue o celular) por padrão. */
+    val themeMode: Flow<ThemeMode> = context.dataStore.data.map { prefs ->
+        prefs[Keys.THEME_MODE]?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } }
+            ?: ThemeMode.SYSTEM
     }
 
     suspend fun setThreshold(value: Float) {
@@ -42,5 +50,9 @@ class UserPreferencesRepository(private val context: Context) {
 
     suspend fun setNotificationsEnabled(enabled: Boolean) {
         context.dataStore.edit { it[Keys.NOTIFICATIONS_ENABLED] = enabled }
+    }
+
+    suspend fun setThemeMode(mode: ThemeMode) {
+        context.dataStore.edit { it[Keys.THEME_MODE] = mode.name }
     }
 }

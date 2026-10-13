@@ -2,41 +2,29 @@ package com.tcc.guardiaosms.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.staticCompositionLocalOf
 
-// Paleta alinhada com colors.xml — mantém consistência entre o tema do
-// sistema (status bar) e o tema do Compose.
-val BrandPrimary = Color(0xFF1B5E20)
-val BrandPrimaryVariant = Color(0xFF2E7D32)
-val AlertDanger = Color(0xFFC62828)
-val AlertDangerBackground = Color(0xFFFDECEA)
-val AlertSafe = Color(0xFF2E7D32)
-val AlertSafeBackground = Color(0xFFE8F5E9)
+private val LocalRiskColors = staticCompositionLocalOf { LightRiskColors }
 
-private val LightColors = lightColorScheme(
-    primary = BrandPrimary,
-    secondary = BrandPrimaryVariant,
-    error = AlertDanger
-)
-
-private val DarkColors = darkColorScheme(
-    primary = BrandPrimaryVariant,
-    secondary = BrandPrimary,
-    error = AlertDanger
-)
+/** Cores de risco do tema atual (claro ou escuro). */
+val MaterialTheme.riskColors: RiskColors
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalRiskColors.current
 
 @Composable
 fun GuardiaoSmsTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) DarkColors else LightColors
-    MaterialTheme(
-        colorScheme = colors,
-        typography = GuardiaoSmsTypography,
-        content = content
-    )
+    CompositionLocalProvider(LocalRiskColors provides if (darkTheme) DarkRiskColors else LightRiskColors) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
+            typography = GuardiaoSmsTypography,
+            content = content
+        )
+    }
 }
